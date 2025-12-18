@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VITAL - Client Experience Orchestration Framework | Kyndryl</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --kyndryl-orange: #FF6200;
+            --kyndryl-orange-light: #FF8533;
+            --kyndryl-orange-dark: #CC4E00;
+            --kyndryl-dark: #0D0D0D;
+            --text-primary: #161616;
+            --text-secondary: #525252;
+            --bg-light: #F4F4F4;
+        }
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.98);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--kyndryl-orange);
+        }
+        .logo-text { color: var(--text-primary); }
+        .nav-center {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        .nav-center a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .nav-center a:hover { color: var(--kyndryl-orange); }
+        .language-btn {
+            background: transparent;
+            border: 2px solid var(--text-secondary);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .language-btn:hover {
+            border-color: var(--kyndryl-orange);
+            color: var(--kyndryl-orange);
+        }
+        .language-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: white;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            min-width: 150px;
+            z-index: 1001;
+        }
+        .language-dropdown.active { display: block; }
+        .language-option {
+            padding: 0.8rem 1.2rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .language-option:hover { background: var(--bg-light); }
+        .language-option.active {
+            background: var(--kyndryl-orange);
+            color: white;
+        }
+        .hero {
+            margin-top: 80px;
+            min-height: 90vh;
+            background: linear-gradient(135deg, #0D0D0D 0%, #1a1a1a 50%, #FF6200 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255,98,0,0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -200px;
+            right: -200px;
+            animation: pulse 4s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+        }
+        .hero-content {
+            max-width: 1400px;
+            padding: 4rem 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        .hero-subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+        }
+        .hero-tagline {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--kyndryl-orange-light);
+            margin-bottom: 3rem;
+        }
+        .cta-button {
+            display: inline-block;
+            background: var(--kyndryl-orange);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid var(--kyndryl-orange);
+        }
+        .cta-button:hover {
+            background: var(--kyndryl-orange-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255,98,0,0.3);
+        }
+        section {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto 4rem;
+            text-align: center;
+        }
+        .philosophy {
+            background: var(--bg-light);
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        .card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(255,98,0,0.15);
+        }
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--kyndryl-orange);
+        }
+        .framework-visual {
+            background: linear-gradient(135deg, #0D0D0D 0%, #1a1a1a 100%);
+            color: white;
+        }
+        .framework-center {
+            background: var(--kyndryl-orange);
+            padding: 3rem;
+            border-radius: 50%;
+            text-align: center;
+            max-width: 300px;
+            margin: 0 auto 3rem;
+            box-shadow: 0 0 40px rgba(255,98,0,0.5);
+        }
+        .source-tag {
+            background: rgba(255,98,0,0.1);
+            border-left: 3px solid var(--kyndryl-orange);
+            padding: 1rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            border-radius: 4px;
+        }
+        .mobile-experience {
+            background: linear-gradient(135deg, #FF6200 0%, #FF8533 100%);
+            color: white;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        .metric-card {
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+        .metric-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(255,98,0,0.2);
+        }
+        .metric-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--kyndryl-orange);
+        }
+        footer {
+            background: #0D0D0D;
+            color: rgba(255,255,255,0.7);
+            padding: 3rem 2rem;
+        }
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+        .footer-section h4 {
+            color: var(--kyndryl-orange);
+            margin-bottom: 1rem;
+        }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .nav-center { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">VITAL <span class="logo-text">| Kyndryl</span></div>
+            <ul class="nav-center">
+                <li><a href="#philosophy">Philosophy</a></li>
+                <li><a href="#framework">Framework</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="language-selector" style="position: relative;">
+                <button class="language-btn" onclick="toggleLang()">
+                    🌐 <span id="curr-lang">EN</span> ▼
+                </button>
+                <div class="language-dropdown" id="lang-dropdown">
+                    <div class="language-option active" onclick="changeLang('en')">English</div>
+                    <div class="language-option" onclick="changeLang('ko')">한국어</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1 id="hero-title">VITAL</h1>
+            <p class="hero-subtitle" id="hero-subtitle">Client Experience Orchestration Framework</p>
+            <p class="hero-tagline" id="hero-tagline">"Making Clients the Heroes"</p>
+            <a href="#framework" class="cta-button" id="hero-cta">Explore Framework</a>
+            <div class="source-tag" id="hero-source">
+                <strong>Source:</strong> VITAL Framework Document (Kyndryl ASEAN & Korea), Author: Ong Whee Teck, VP Consult Partner
+            </div>
+        </div>
+    </section>
+
+    <section class="philosophy" id="philosophy">
+        <h2 class="section-title" id="phil-title">The VITAL Philosophy: Making Heroes</h2>
+        <p class="section-subtitle" id="phil-subtitle">
+            VITAL inverts the traditional consulting model. Instead of clients being passive recipients, 
+            they emerge as heroes who discover their own capacity for innovation.
+        </p>
+        <div class="grid-3">
+            <div class="card">
+                <div class="card-icon">🔍</div>
+                <h3 id="disc-title">Discovery over Delivery</h3>
+                <p id="disc-text">Clients discover insights through guided exploration rather than receiving conclusions.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">💪</div>
+                <h3 id="cap-title">Capability over Dependency</h3>
+                <p id="cap-text">Sessions build client capability to continue transformation independently.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🌟</div>
+                <h3 id="vis-title">Visibility over Credit</h3>
+                <p id="vis-text">Outputs position clients as thought leaders and innovators.</p>
+            </div>
+        </div>
+        <div class="source-tag" id="phil-source">
+            <strong>Context:</strong> This philosophy draws from decades of enterprise transformation experience across Asia Pacific.
+        </div>
+    </section>
+
+    <section class="framework-visual" id="framework">
+        <h2 class="section-title" id="frame-title">The VITAL Framework</h2>
+        <p class="section-subtitle" id="frame-subtitle">Five interconnected components orchestrating transformative client experiences</p>
+        <div class="framework-center">
+            <h3 id="frame-center">Experience Orchestration</h3>
+            <p id="frame-center-desc">Deliberate choreography of discovery moments and breakthrough insights</p>
+        </div>
+        <div class="grid-3">
+            <div class="card">
+                <h3>📋 INPUTS</h3>
+                <p id="inputs-desc">Business Context, Stakeholder Landscape, Technology Estate, Transformation Readiness</p>
+            </div>
+            <div class="card">
+                <h3>🛠️ TOOLS</h3>
+                <p id="tools-desc">Software, Hardware, Development Capabilities</p>
+            </div>
+            <div class="card">
+                <h3>📚 KNOWLEDGE</h3>
+                <p id="know-desc">Industry Experiences, Architecture Artifacts, Transformation Playbooks</p>
+            </div>
+            <div class="card">
+                <h3>🎯 OUTPUTS</h3>
+                <p id="outputs-desc">Training Programs, Co-branded Content, Technical Documentation</p>
+            </div>
+        </div>
+        <div class="source-tag" style="background: rgba(255,255,255,0.1); border-color: white; color: white;" id="frame-source">
+            <strong>Technical Terms:</strong> AIOps (AI for IT Operations), Kyndryl Bridge (Integrated AIOps Platform)
+        </div>
+    </section>
+
+    <section class="mobile-experience">
+        <h2 class="section-title" id="mobile-title">VITAL ASEAN & Korea: The Mobile Experience</h2>
+        <p class="section-subtitle" id="mobile-subtitle">Delivering world-class experiences across complex regional markets</p>
+        <div class="grid-3">
+            <div class="card" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+                <h3>🇸🇬 Singapore</h3>
+                <p id="sg-desc">Financial services sophistication, digital leadership</p>
+            </div>
+            <div class="card" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+                <h3>🇲🇾 Malaysia</h3>
+                <p id="my-desc">Manufacturing transformation, Islamic finance innovation</p>
+            </div>
+            <div class="card" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+                <h3>🇰🇷 South Korea</h3>
+                <p id="kr-desc">Advanced manufacturing, 6G pioneering</p>
+            </div>
+        </div>
+    </section>
+
+    <section style="background: var(--bg-light);">
+        <h2 class="section-title" id="success-title">The Ultimate Measure: Making Heroes</h2>
+        <p class="section-subtitle" id="success-subtitle">VITAL's success is measured by our clients' visibility</p>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-number">90K+</div>
+                <div id="metric1">Global Experts</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number">75+</div>
+                <div id="metric2">Fortune 100 Clients</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number">6</div>
+                <div id="metric3">ASEAN & Korea Markets</div>
+            </div>
+        </div>
+    </section>
+
+    <section style="background: linear-gradient(135deg, #0D0D0D 0%, #FF6200 100%); color: white; text-align: center;" id="contact">
+        <h2 class="section-title" id="cta-title">Begin Your Transformation with VITAL</h2>
+        <p class="section-subtitle" style="color: rgba(255,255,255,0.9);" id="cta-subtitle">Learn how VITAL can solve your unique business challenges</p>
+        <a href="mailto:vital@kyndryl.com" class="cta-button" id="cta-btn" style="margin: 2rem 1rem 0;">Talk to an Expert</a>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4 id="footer1">VITAL Services</h4>
+                <p id="footer1-text">Philosophy, Framework, Components</p>
+            </div>
+            <div class="footer-section">
+                <h4 id="footer2">Kyndryl Services</h4>
+                <p>Cloud, Applications, Data & AI, Cyber Resilience</p>
+            </div>
+            <div class="footer-section">
+                <h4 id="footer3">Resources</h4>
+                <p id="footer3-text">Case Studies, Whitepapers, Blog</p>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+            <p style="color: rgba(255,255,255,0.5);">© 2025 Kyndryl Inc. All rights reserved. | The Heart of Progress™</p>
+            <p style="color: rgba(255,255,255,0.4); font-size: 0.85rem; margin-top: 1rem;" id="footer-credit">
+                Based on VITAL Framework Document, Kyndryl Bridge AIOps materials, SM OCM Information Pack
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            en: {
+                'hero-title': 'VITAL',
+                'hero-subtitle': 'Client Experience Orchestration Framework',
+                'hero-tagline': '"Making Clients the Heroes"',
+                'hero-cta': 'Explore Framework',
+                'hero-source': '<strong>Source:</strong> VITAL Framework Document (Kyndryl ASEAN & Korea), Author: Ong Whee Teck, VP Consult Partner',
+                'phil-title': 'The VITAL Philosophy: Making Heroes',
+                'phil-subtitle': 'VITAL inverts the traditional consulting model. Instead of clients being passive recipients, they emerge as heroes who discover their own capacity for innovation.',
+                'disc-title': 'Discovery over Delivery',
+                'disc-text': 'Clients discover insights through guided exploration rather than receiving conclusions.',
+                'cap-title': 'Capability over Dependency',
+                'cap-text': 'Sessions build client capability to continue transformation independently.',
+                'vis-title': 'Visibility over Credit',
+                'vis-text': 'Outputs position clients as thought leaders and innovators.',
+                'phil-source': '<strong>Context:</strong> This philosophy draws from decades of enterprise transformation experience across Asia Pacific.',
+                'frame-title': 'The VITAL Framework',
+                'frame-subtitle': 'Five interconnected components orchestrating transformative client experiences',
+                'frame-center': 'Experience Orchestration',
+                'frame-center-desc': 'Deliberate choreography of discovery moments and breakthrough insights',
+                'inputs-desc': 'Business Context, Stakeholder Landscape, Technology Estate, Transformation Readiness',
+                'tools-desc': 'Software, Hardware, Development Capabilities',
+                'know-desc': 'Industry Experiences, Architecture Artifacts, Transformation Playbooks',
+                'outputs-desc': 'Training Programs, Co-branded Content, Technical Documentation',
+                'frame-source': '<strong>Technical Terms:</strong> AIOps (AI for IT Operations), Kyndryl Bridge (Integrated AIOps Platform)',
+                'mobile-title': 'VITAL ASEAN & Korea: The Mobile Experience',
+                'mobile-subtitle': 'Delivering world-class experiences across complex regional markets',
+                'sg-desc': 'Financial services sophistication, digital leadership',
+                'my-desc': 'Manufacturing transformation, Islamic finance innovation',
+                'kr-desc': 'Advanced manufacturing, 6G pioneering',
+                'success-title': 'The Ultimate Measure: Making Heroes',
+                'success-subtitle': "VITAL's success is measured by our clients' visibility",
+                'metric1': 'Global Experts',
+                'metric2': 'Fortune 100 Clients',
+                'metric3': 'ASEAN & Korea Markets',
+                'cta-title': 'Begin Your Transformation with VITAL',
+                'cta-subtitle': 'Learn how VITAL can solve your unique business challenges',
+                'cta-btn': 'Talk to an Expert',
+                'footer1': 'VITAL Services',
+                'footer1-text': 'Philosophy, Framework, Components',
+                'footer2': 'Kyndryl Services',
+                'footer3': 'Resources',
+                'footer3-text': 'Case Studies, Whitepapers, Blog',
+                'footer-credit': 'Based on VITAL Framework Document, Kyndryl Bridge AIOps materials, SM OCM Information Pack'
+            },
+            ko: {
+                'hero-title': 'VITAL',
+                'hero-subtitle': '고객 경험 오케스트레이션 프레임워크',
+                'hero-tagline': '"고객을 자신의 변혁 여정의 영웅으로 만들기"',
+                'hero-cta': '프레임워크 살펴보기',
+                'hero-source': '<strong>출처:</strong> VITAL Framework 문서 (Kyndryl ASEAN & Korea), 작성자: Ong Whee Teck, VP Consult Partner',
+                'phil-title': 'VITAL 철학: 영웅 만들기',
+                'phil-subtitle': 'VITAL은 전통적인 컨설팅 모델을 뒤집습니다. 고객이 수동적 수혜자가 아닌, 자신의 혁신 역량을 발견하고 조직 내 변화를 주도하는 영웅으로 거듭납니다.',
+                'disc-title': '전달이 아닌 발견',
+                'disc-text': '컨설턴트가 결론을 제시하는 대신, 고객이 가이드된 탐색을 통해 스스로 인사이트를 발견합니다.',
+                'cap-title': '의존성이 아닌 역량',
+                'cap-text': '세션은 고객이 독립적으로 변혁을 지속할 수 있는 역량을 구축합니다.',
+                'vis-title': '공로가 아닌 가시성',
+                'vis-text': '결과물은 고객을 조직과 산업 내 사고 리더이자 혁신가로 포지셔닝합니다.',
+                'phil-source': '<strong>맥락:</strong> 이 철학은 아시아 태평양 지역의 수십 년간의 기업 변혁 경험에서 도출되었습니다.',
+                'frame-title': 'VITAL 프레임워크',
+                'frame-subtitle': '혁신적인 고객 경험을 조율하는 5개의 상호 연결된 구성 요소',
+                'frame-center': '경험 오케스트레이션',
+                'frame-center-desc': '발견의 순간과 획기적인 인사이트를 의도적으로 조율',
+                'inputs-desc': '비즈니스 컨텍스트, 이해관계자 환경, 기술 현황, 변혁 준비도',
+                'tools-desc': '소프트웨어, 하드웨어, 개발 역량',
+                'know-desc': '산업 경험, 아키텍처 아티팩트, 변혁 플레이북',
+                'outputs-desc': '교육 프로그램, 공동 브랜드 콘텐츠, 기술 문서',
+                'frame-source': '<strong>기술 용어:</strong> AIOps (IT 운영을 위한 AI), Kyndryl Bridge (통합 AIOps 플랫폼)',
+                'mobile-title': 'VITAL ASEAN & Korea: 모바일 경험',
+                'mobile-subtitle': '복잡한 지역 시장 전역에서 세계적 수준의 경험 제공',
+                'sg-desc': '금융 서비스 정교함, 디지털 리더십',
+                'my-desc': '제조업 변혁, 이슬람 금융 혁신',
+                'kr-desc': '첨단 제조, 6G 선도',
+                'success-title': '궁극의 측정: 영웅 만들기',
+                'success-subtitle': 'VITAL의 성공은 고객의 가시성으로 측정됩니다',
+                'metric1': '글로벌 전문가',
+                'metric2': 'Fortune 100 고객',
+                'metric3': 'ASEAN & Korea 시장',
+                'cta-title': 'VITAL과 함께 변혁을 시작하세요',
+                'cta-subtitle': '귀사의 고유한 비즈니스 문제를 해결하는 방법을 알아보세요',
+                'cta-btn': '전문가와 상담하기',
+                'footer1': 'VITAL 서비스',
+                'footer1-text': '철학, 프레임워크, 구성요소',
+                'footer2': 'Kyndryl 서비스',
+                'footer3': '리소스',
+                'footer3-text': '사례 연구, 백서, 블로그',
+                'footer-credit': 'VITAL Framework 문서, Kyndryl Bridge AIOps 자료, SM OCM Information Pack 기반'
+            }
+        };
+
+        function toggleLang() {
+            document.getElementById('lang-dropdown').classList.toggle('active');
+        }
+
+        function changeLang(lang) {
+            document.getElementById('curr-lang').textContent = lang.toUpperCase();
+            Object.keys(translations[lang]).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.innerHTML = translations[lang][key];
+                }
+            });
+            document.querySelectorAll('.language-option').forEach(opt => {
+                opt.classList.remove('active');
+                if ((lang === 'en' && opt.textContent === 'English') || 
+                    (lang === 'ko' && opt.textContent === '한국어')) {
+                    opt.classList.add('active');
+                }
+            });
+            document.getElementById('lang-dropdown').classList.remove('active');
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.language-selector')) {
+                document.getElementById('lang-dropdown').classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
